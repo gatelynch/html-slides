@@ -14,6 +14,8 @@
       --surface: #f8fafc;
       --border: #dbe3ef;
       --on-accent: #ffffff;
+      --code-bg: #101828;
+      --code-text: #f8fafc;
       --font-title: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
       --font-body: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
       --slide-padding: clamp(2rem, 6vw, 5rem);
@@ -81,22 +83,45 @@
     }
 
     * { box-sizing: border-box; }
-    html {
-      height: 100%;
-      scroll-snap-type: y mandatory;
-      scroll-behavior: smooth;
-      overflow-x: hidden;
-    }
+    html { height: 100%; }
     body {
-      min-height: 100%;
+      height: 100%;
       margin: 0;
       font-family: var(--font-body);
       background: var(--bg-primary);
       color: var(--text-primary);
+      overflow: hidden;
+    }
+
+    /* 捲動容器：兩種換頁模式都在這裡發生，並隱藏捲軸維持簡報乾淨。 */
+    .deck {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+    }
+    .deck::-webkit-scrollbar { display: none; }
+
+    /* 預設：傳統左右橫向換頁 */
+    body.layout-horizontal .deck {
+      display: flex;
+      flex-direction: row;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+    }
+
+    /* 可選：上下垂直捲動 */
+    body.layout-vertical .deck {
+      display: block;
       overflow-x: hidden;
+      overflow-y: auto;
+      scroll-snap-type: y mandatory;
     }
 
     .slide {
+      flex: 0 0 100vw;
       width: 100vw;
       height: 100vh;
       height: 100dvh;
@@ -147,7 +172,7 @@
     .eyebrow {
       font-size: clamp(.88rem, 1.2vw, 1.05rem);
       line-height: 1.2;
-      font-weight: 760;
+      font-weight: 700;
       letter-spacing: .12em;
       text-transform: uppercase;
       color: var(--accent);
@@ -268,7 +293,7 @@
       display: block;
       font-size: clamp(3.4rem, 8vw, 6rem);
       line-height: .9;
-      font-weight: 850;
+      font-weight: 800;
       color: var(--accent);
     }
 
@@ -323,7 +348,7 @@
       place-items: center;
       background: var(--accent);
       color: var(--on-accent);
-      font-weight: 850;
+      font-weight: 800;
       border: 6px solid var(--bg-primary);
     }
 
@@ -359,8 +384,8 @@
     .code-card {
       padding: clamp(1.2rem, 2.4vw, 2rem);
       border-radius: 8px;
-      background: #101828;
-      color: #f8fafc;
+      background: var(--code-bg);
+      color: var(--code-text);
       box-shadow: var(--shadow);
       overflow: hidden;
     }
@@ -394,7 +419,11 @@
       gap: .85rem;
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       color: var(--text-primary);
+    }
+    .prompt-body {
+      margin: 0;
       white-space: pre-wrap;
+      font: inherit;
     }
     .prompt-box .tag {
       width: fit-content;
@@ -558,9 +587,12 @@
     }
   </style>
 </head>
-<body class="style-clean">
+<body class="style-clean layout-horizontal">
+  <!-- 換頁模式：預設 layout-horizontal（左右橫向）。改成 layout-vertical 可預設上下捲動；
+       使用者也可在簡報中按 V 即時切換，或用網址參數 ?layout=vertical / ?layout=horizontal 覆寫。 -->
   <div class="progress" aria-hidden="true"></div>
 
+  <main class="deck">
   <section class="slide cover" data-note="封面：用一句話說明今天會帶觀眾完成什麼。">
     <div class="slide-inner">
       <p class="eyebrow reveal">HTML 簡報範本</p>
@@ -786,13 +818,13 @@
       <h2 class="reveal">把第一版交給 AI 修</h2>
       <div class="prompt-box reveal">
         <span class="tag">Prompt</span>
-你是有經驗的國小導師。請幫我把下面訊息改成更適合回覆家長的版本。
+        <pre class="prompt-body">你是有經驗的國小導師。請幫我把下面訊息改成更適合回覆家長的版本。
 
 條件：
 1. 120 字以內
 2. 先同理，再說明會確認事實
 3. 不承諾未確認的處理結果
-4. 最後留下明確下一步
+4. 最後留下明確下一步</pre>
       </div>
     </div>
   </section>
@@ -884,10 +916,13 @@
       <p class="lead reveal">把每次工具使用都設計成可觀察、可比較、可修正的學習活動。</p>
     </div>
   </section>
+  </main>
 
   <script>
     class SlideDeck {
       constructor() {
+        this.body = document.body;
+        this.initLayout();
         this.slides = Array.from(document.querySelectorAll('.slide'));
         this.progress = document.querySelector('.progress');
         this.current = 0;
@@ -895,6 +930,28 @@
         this.bindKeys();
         this.observe();
         this.update();
+      }
+
+      initLayout() {
+        // 網址參數可覆寫預設模式；否則沿用 <body> 上的 class，再退回橫向。
+        const param = new URLSearchParams(location.search).get('layout');
+        if (param === 'vertical' || param === 'horizontal') {
+          this.setLayout(param);
+        } else if (!this.body.classList.contains('layout-vertical')) {
+          this.setLayout('horizontal');
+        }
+      }
+
+      setLayout(mode) {
+        this.body.classList.toggle('layout-vertical', mode === 'vertical');
+        this.body.classList.toggle('layout-horizontal', mode !== 'vertical');
+      }
+
+      toggleLayout() {
+        const next = this.body.classList.contains('layout-vertical') ? 'horizontal' : 'vertical';
+        this.setLayout(next);
+        // 軸向改變後，等版面重排再瞬間對齊目前頁面。
+        requestAnimationFrame(() => this.goTo(this.current, true));
       }
 
       createDots() {
@@ -922,6 +979,9 @@
             event.preventDefault();
             this.goTo(this.current - 1);
           }
+          if (event.key === 'v' || event.key === 'V') {
+            this.toggleLayout();
+          }
         });
       }
 
@@ -938,10 +998,15 @@
         this.slides.forEach((slide) => observer.observe(slide));
       }
 
-      goTo(index) {
+      goTo(index, instant = false) {
         if (index < 0 || index >= this.slides.length) return;
         this.current = index;
-        this.slides[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        this.slides[index].scrollIntoView({
+          behavior: (instant || reduceMotion) ? 'auto' : 'smooth',
+          block: 'start',
+          inline: 'start',
+        });
         this.update();
       }
 
