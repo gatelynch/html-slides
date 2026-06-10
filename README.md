@@ -12,6 +12,23 @@
 - **可發布**：支援輸出到 GitHub Pages。
 - **無障礙友善**：動畫低調、可讀，支援 `prefers-reduced-motion`。
 
+## 風格預覽
+
+六種風格共用同一組 CSS token，差別主要在背景、文字與強調色。
+
+<table>
+  <tr>
+    <td align="center"><img src="assets/preview/clean.svg" width="260" alt="Clean 風格預覽"><br><b>Clean</b>（預設）</td>
+    <td align="center"><img src="assets/preview/workshop.svg" width="260" alt="Workshop 風格預覽"><br><b>Workshop</b></td>
+    <td align="center"><img src="assets/preview/notebook.svg" width="260" alt="Notebook 風格預覽"><br><b>Notebook</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/preview/story.svg" width="260" alt="Story 風格預覽"><br><b>Story</b></td>
+    <td align="center"><img src="assets/preview/lab.svg" width="260" alt="Lab 風格預覽"><br><b>Lab</b></td>
+    <td align="center"><img src="assets/preview/dark.svg" width="260" alt="Dark 風格預覽"><br><b>Dark</b></td>
+  </tr>
+</table>
+
 ## 內容結構
 
 ```
@@ -24,8 +41,15 @@ html-slides/
 │   ├── github-pages.md           # 發布到 GitHub Pages
 │   └── qa-checklist.md           # 交付前檢查清單
 └── assets/
-    └── templates/
-        └── base-deck.html        # 基礎簡報模板
+    ├── templates/
+    │   └── base-deck.html        # 基礎簡報模板
+    └── preview/                  # README 風格預覽圖（6 種風格）
+        ├── clean.svg
+        ├── workshop.svg
+        ├── notebook.svg
+        ├── story.svg
+        ├── lab.svg
+        └── dark.svg
 ```
 
 ## 安裝
