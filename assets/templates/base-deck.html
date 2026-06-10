@@ -1,0 +1,960 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HTML 簡報</title>
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --text-primary: #111827;
+      --text-secondary: #64748b;
+      --accent: #2563eb;
+      --accent-dim: rgba(37, 99, 235, 0.10);
+      --surface: #f8fafc;
+      --border: #dbe3ef;
+      --on-accent: #ffffff;
+      --font-title: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      --font-body: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      --slide-padding: clamp(2rem, 6vw, 5rem);
+      --content-gap: clamp(1rem, 2.4vw, 2rem);
+      --shadow: 0 18px 48px rgba(15, 23, 42, 0.10);
+    }
+
+    body.style-workshop {
+      --bg-primary: #fffaf2;
+      --text-primary: #1f2933;
+      --text-secondary: #6b7280;
+      --accent: #d9480f;
+      --accent-dim: rgba(217, 72, 15, 0.12);
+      --surface: #ffffff;
+      --border: #eadfd3;
+      --on-accent: #ffffff;
+    }
+
+    body.style-notebook {
+      --bg-primary: #fbfcf8;
+      --text-primary: #17201a;
+      --text-secondary: #657066;
+      --accent: #216869;
+      --accent-dim: rgba(33, 104, 105, 0.12);
+      --surface: #ffffff;
+      --border: #dce5dc;
+      --on-accent: #ffffff;
+    }
+
+    body.style-story {
+      --bg-primary: #111827;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --accent: #f97316;
+      --accent-dim: rgba(249, 115, 22, 0.18);
+      --surface: rgba(255, 255, 255, 0.08);
+      --border: rgba(255, 255, 255, 0.16);
+      --on-accent: #111827;
+      --shadow: 0 22px 58px rgba(0, 0, 0, 0.26);
+    }
+
+    body.style-lab {
+      --bg-primary: #f7fbff;
+      --text-primary: #102033;
+      --text-secondary: #53657a;
+      --accent: #0891b2;
+      --accent-dim: rgba(8, 145, 178, 0.12);
+      --surface: #ffffff;
+      --border: #cde4ee;
+      --on-accent: #ffffff;
+      --font-title: Inter, -apple-system, BlinkMacSystemFont, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      --font-body: Inter, -apple-system, BlinkMacSystemFont, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    }
+
+    body.style-dark {
+      --bg-primary: #050505;
+      --text-primary: #ffffff;
+      --text-secondary: #b7b7b7;
+      --accent: #facc15;
+      --accent-dim: rgba(250, 204, 21, 0.16);
+      --surface: rgba(255, 255, 255, 0.06);
+      --border: rgba(255, 255, 255, 0.16);
+      --on-accent: #050505;
+      --shadow: 0 20px 56px rgba(0, 0, 0, 0.36);
+    }
+
+    * { box-sizing: border-box; }
+    html {
+      height: 100%;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+    body {
+      min-height: 100%;
+      margin: 0;
+      font-family: var(--font-body);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+
+    .slide {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      position: relative;
+      overflow: hidden;
+      padding: var(--slide-padding);
+      background: var(--bg-primary);
+    }
+
+    .slide.cover,
+    .slide.closing {
+      justify-content: center;
+    }
+
+    .slide-inner {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: var(--content-gap);
+    }
+
+    h1, h2, h3, p, ul, ol, blockquote { margin: 0; }
+    h1, h2, h3 { font-family: var(--font-title); letter-spacing: 0; }
+    h1 {
+      max-width: 11ch;
+      font-size: clamp(3.2rem, 7vw, 6.4rem);
+      line-height: 0.98;
+    }
+    h2 {
+      max-width: 14ch;
+      font-size: clamp(2.4rem, 5.2vw, 4.6rem);
+      line-height: 1.04;
+    }
+    h3 {
+      font-size: clamp(1.35rem, 2.4vw, 2rem);
+      line-height: 1.15;
+    }
+    p, li {
+      font-size: clamp(1.08rem, 1.7vw, 1.45rem);
+      line-height: 1.48;
+      color: var(--text-secondary);
+    }
+
+    .eyebrow {
+      font-size: clamp(.88rem, 1.2vw, 1.05rem);
+      line-height: 1.2;
+      font-weight: 760;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .lead { max-width: 38ch; }
+    .accent { color: var(--accent); }
+
+    .cols {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: clamp(1.5rem, 4vw, 4rem);
+      align-items: center;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(.9rem, 2vw, 1.3rem);
+    }
+
+    .card,
+    .panel,
+    .prompt-box,
+    .rubric-cell {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .card,
+    .panel,
+    .prompt-box {
+      padding: clamp(1.2rem, 2.4vw, 2rem);
+    }
+
+    .card {
+      display: grid;
+      gap: .65rem;
+    }
+
+    .card .num,
+    .agenda-num {
+      width: 3rem;
+      height: 3rem;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--on-accent);
+      font-weight: 800;
+    }
+
+    .agenda-list {
+      display: grid;
+      gap: 1rem;
+      max-width: 900px;
+    }
+    .agenda-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    .task-grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: clamp(1rem, 2.4vw, 2rem);
+      align-items: stretch;
+    }
+    .task-list {
+      display: grid;
+      gap: .9rem;
+    }
+    .task-row {
+      display: grid;
+      grid-template-columns: 7rem 1fr;
+      gap: 1rem;
+      align-items: start;
+      padding-bottom: .9rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .task-row:last-child { border-bottom: 0; padding-bottom: 0; }
+    .task-label {
+      color: var(--accent);
+      font-weight: 800;
+      font-size: clamp(.95rem, 1.2vw, 1.05rem);
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .compare-grid .panel {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+    .stat-card {
+      padding: clamp(1.2rem, 2.4vw, 2rem);
+      border-left: 4px solid var(--accent);
+      background: var(--surface);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+    .stat-num {
+      display: block;
+      font-size: clamp(3.4rem, 8vw, 6rem);
+      line-height: .9;
+      font-weight: 850;
+      color: var(--accent);
+    }
+
+    .comparison-table {
+      display: grid;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .comparison-row {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr;
+    }
+    .comparison-row > * {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+    }
+    .comparison-row > *:last-child { border-right: 0; }
+    .comparison-row:last-child > * { border-bottom: 0; }
+    .comparison-head { font-weight: 800; color: var(--text-primary); }
+    .winner { background: var(--accent-dim); }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1rem;
+      position: relative;
+    }
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 2rem;
+      right: 2rem;
+      top: 1.5rem;
+      height: 2px;
+      background: var(--border);
+    }
+    .time-step {
+      display: grid;
+      gap: .75rem;
+      position: relative;
+      z-index: 1;
+    }
+    .time-dot {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--accent);
+      color: var(--on-accent);
+      font-weight: 850;
+      border: 6px solid var(--bg-primary);
+    }
+
+    .chart-bars {
+      display: grid;
+      gap: .9rem;
+      padding: clamp(1.2rem, 2.4vw, 2rem);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+    .bar-row {
+      display: grid;
+      grid-template-columns: 7rem 1fr 4rem;
+      gap: 1rem;
+      align-items: center;
+    }
+    .bar-track {
+      height: 1.25rem;
+      border-radius: 999px;
+      background: var(--accent-dim);
+      overflow: hidden;
+    }
+    .bar-fill {
+      display: block;
+      width: var(--value);
+      height: 100%;
+      border-radius: inherit;
+      background: var(--accent);
+    }
+
+    .code-card {
+      padding: clamp(1.2rem, 2.4vw, 2rem);
+      border-radius: 8px;
+      background: #101828;
+      color: #f8fafc;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .code-card pre {
+      margin: 0;
+      white-space: pre-wrap;
+      font-size: clamp(1rem, 1.4vw, 1.22rem);
+      line-height: 1.55;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .before-after {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .before-after .panel {
+      display: grid;
+      gap: .9rem;
+    }
+    .change-note {
+      padding: .75rem 1rem;
+      border-radius: 8px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    .prompt-box {
+      display: grid;
+      gap: .85rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: var(--text-primary);
+      white-space: pre-wrap;
+    }
+    .prompt-box .tag {
+      width: fit-content;
+      padding: .25rem .55rem;
+      border-radius: 999px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-family: var(--font-body);
+      font-weight: 800;
+      font-size: .9rem;
+    }
+
+    .rubric {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: .8rem;
+    }
+    .rubric-cell {
+      padding: clamp(1rem, 2vw, 1.6rem);
+      display: grid;
+      gap: .65rem;
+    }
+    .rubric-cell strong {
+      color: var(--accent);
+      font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+    }
+
+    .workflow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .8rem;
+      align-items: stretch;
+    }
+    .workflow .card {
+      box-shadow: none;
+    }
+
+    .case-visual {
+      min-height: min(48vh, 440px);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, .18), rgba(255, 255, 255, 0)),
+        linear-gradient(135deg, var(--accent-dim), rgba(100, 116, 139, .16));
+      border: 1px solid var(--border);
+      display: grid;
+      place-items: center;
+      padding: 2rem;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+
+    .quote-mark {
+      color: var(--accent);
+      font-size: clamp(4rem, 9vw, 7rem);
+      line-height: .7;
+    }
+    blockquote {
+      max-width: 18ch;
+      font-size: clamp(2.1rem, 4vw, 3.8rem);
+      line-height: 1.12;
+    }
+
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: var(--progress, 0%);
+      height: 4px;
+      background: var(--accent);
+      z-index: 20;
+      transition: width .25s ease;
+    }
+
+    .nav-dots {
+      position: fixed;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      display: grid;
+      gap: .5rem;
+      z-index: 20;
+    }
+    .nav-dots button {
+      width: .55rem;
+      height: .55rem;
+      border: 0;
+      border-radius: 50%;
+      padding: 0;
+      background: var(--text-secondary);
+      opacity: .35;
+      cursor: pointer;
+    }
+    .nav-dots button.active {
+      background: var(--accent);
+      opacity: 1;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity .6s cubic-bezier(.16, 1, .3, 1),
+                  transform .6s cubic-bezier(.16, 1, .3, 1),
+                  filter .6s ease;
+    }
+    .reveal.from-left { transform: translateX(-22px); }
+    .reveal.from-right { transform: translateX(22px); }
+    .reveal.from-blur { transform: none; filter: blur(8px); }
+    .slide.visible .reveal {
+      opacity: 1;
+      transform: none;
+      filter: none;
+    }
+    .stagger > * {
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity .55s cubic-bezier(.16, 1, .3, 1),
+                  transform .55s cubic-bezier(.16, 1, .3, 1);
+    }
+    .slide.visible .stagger > * { opacity: 1; transform: none; }
+    .slide.visible .stagger > *:nth-child(1) { transition-delay: .05s; }
+    .slide.visible .stagger > *:nth-child(2) { transition-delay: .13s; }
+    .slide.visible .stagger > *:nth-child(3) { transition-delay: .21s; }
+    .slide.visible .stagger > *:nth-child(4) { transition-delay: .29s; }
+    .slide.visible .stagger > *:nth-child(5) { transition-delay: .37s; }
+    .slide.visible .stagger > *:nth-child(6) { transition-delay: .45s; }
+
+    @media (max-width: 860px) {
+      .cols,
+      .task-grid,
+      .compare-grid,
+      .rubric,
+      .workflow,
+      .stats,
+      .comparison-row,
+      .timeline,
+      .before-after,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      .nav-dots { display: none; }
+      .task-row { grid-template-columns: 1fr; gap: .35rem; }
+    }
+
+    @media (max-height: 620px) {
+      :root { --slide-padding: clamp(1rem, 4vw, 2.4rem); }
+      .nav-dots { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .reveal,
+      .stagger > * {
+        opacity: 1;
+        transform: none;
+        filter: none;
+      }
+    }
+  </style>
+</head>
+<body class="style-clean">
+  <div class="progress" aria-hidden="true"></div>
+
+  <section class="slide cover" data-note="封面：用一句話說明今天會帶觀眾完成什麼。">
+    <div class="slide-inner">
+      <p class="eyebrow reveal">HTML 簡報範本</p>
+      <h1 class="reveal from-blur">把內容變成<span class="accent">可教的流程</span></h1>
+      <p class="lead reveal">這份基底展示 Clean 預設風格、通用頁型與教學頁型。可依場合改成 Workshop、Notebook、Story、Lab 或 Dark。</p>
+    </div>
+  </section>
+
+  <section class="slide" data-note="Agenda：讓觀眾知道整場會怎麼走。">
+    <div class="slide-inner">
+      <p class="eyebrow reveal">Agenda</p>
+      <h2 class="reveal">今天的路徑</h2>
+      <div class="agenda-list stagger">
+        <div class="agenda-item">
+          <span class="agenda-num">01</span>
+          <div>
+            <h3>看見問題</h3>
+            <p>先定義這份簡報要解決的真實情境。</p>
+          </div>
+        </div>
+        <div class="agenda-item">
+          <span class="agenda-num">02</span>
+          <div>
+            <h3>做一次任務</h3>
+            <p>讓學習者先嘗試，再揭示範例與判準。</p>
+          </div>
+        </div>
+        <div class="agenda-item">
+          <span class="agenda-num">03</span>
+          <div>
+            <h3>帶走流程</h3>
+            <p>把一次活動收束成可重複使用的方法。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-note="Two-column：左邊說明，右邊放證據或示意。">
+    <div class="slide-inner cols">
+      <div class="reveal from-left">
+        <p class="eyebrow">Two-column</p>
+        <h2>文字旁邊要有證據</h2>
+        <p class="lead">右側可以換成真實截圖、學生作品、案例照片、圖表或流程示意。不要讓兩欄都變成長文字。</p>
+      </div>
+      <div class="panel reveal from-right">
+        <div class="grid">
+          <div class="card"><span class="num">1</span><h3>輸入</h3><p>給材料、角色與限制。</p></div>
+          <div class="card"><span class="num">2</span><h3>判斷</h3><p>讓觀眾比較差異。</p></div>
+          <div class="card"><span class="num">3</span><h3>輸出</h3><p>留下可討論的作品。</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-note="Stat：數字要有單位與意義，不只是放大。">
+    <div class="slide-inner">
+      <p class="eyebrow reveal">Stat</p>
+      <h2 class="reveal">三個數字讓重點站穩</h2>
+      <div class="stats stagger">
+        <div class="stat-card"><span class="stat-num">4</span><h3>分鐘嘗試</h3><p>先自己寫，再比較 AI 版本。</p></div>
+        <div class="stat-card"><span class="stat-num">3</span><h3>個判準</h3><p>同理、事實、下一步。</p></div>
+        <div class="stat-card"><span class="stat-num">1</span><h3>個產出</h3><p>留下可直接討論的作品。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-note="Feature Grid：最多六張卡，每張一句話。">
+    <div class="slide-inner">
+      <p class="eyebrow reveal">Feature Grid</p>
+      <h2 class="reveal">一個活動要有六個零件</h2>
+      <div class="grid stagger">
+        <div class="card"><h3>情境</h3><p>讓學習者知道自己在哪裡。</p></div>
+        <div class="card"><h3>任務</h3><p>一句可執行的要求。</p></div>
+        <div class="card"><h3>限制</h3><p>時間、字數、角色或工具。</p></div>
+        <div class="card"><h3>產出</h3><p>最後要留下的東西。</p></div>
+        <div class="card"><h3>比較</h3><p>看見不同做法的差異。</p></div>
+        <div class="card"><h3>修正</h3><p>把判準轉回下一版作品。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-note="Comparison：用共同標準比較，不要兩邊各講各的。">
+    <div class="slide-inner">
+      <p class="eyebrow reveal">Comparison</p>
+      <h2 class="reveal">比較兩種活動設計</h2>
+      <div class="comparison-table reveal">
+        <div class="comparison-row comparison-head"><span>判準</span><span class="winner">可操作活動</span><span>概念講述</span></div>
+        <div class="comparison-row"><span>學習者行動</span><span class="winner">有明確任務</span><span>只聽重點</span></div>
+        <div class="comparison-row"><span>產出物</span><span class="winner">可比較、可修正</span><span>通常沒有</span></div>
+        <div class="comparison-row"><span>教師回饋</span><span class="winner">依規準給建議</span><span>只能補充說明</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-note="Process：步驟要短，且有方向關係。">
+    <div class="slide-inner">
+      <p class="eyebrow reveal">Process</p>
+      <h2 class="reveal">從嘗試到修正</h2>
+      <div class="workflow stagger">
+        <div class="card"><span class="num">1</span><h3>嘗試</h3><p>先用自己的判斷做一版。</p></div>
+        <div class="card"><span class="num">2</span><h3>比較</h3><p>看同儕或 AI 版本差異。</p></div>
+        <div class="card"><span class="num">3</span><h3>揭示</h3><p>看到教師版本與判準。</p></div>
+        <div class="card"><span class="num">4</span><h3>修正</h3><p>回到自己的作品重寫。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-note="Timeline：適合路線圖、課程節奏或階段進度。">
+    <div class="slide-inner">
+      <p class="eyebrow reveal">Timeline</p>
+      <h2 class="reveal">一堂課的節奏</h2>
+      <div class="timeline stagger">
+        <div class="time-step"><span class="time-dot">1</span><h3>引入</h3><p>用案例建立問題感。</p></div>
+        <div class="time-step"><span class="time-dot">2</span><h3>嘗試</h3><p>個人先寫第一版。</p></div>
+        <div class="time-step"><span class="time-dot">3</span><h3>比較</h3><p>小組討論差異。</p></div>
+        <div class="time-step"><span class="time-dot">4</span><h3>收束</h3><p>整理成工作流。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-note="Chart：圖表要讓結論更容易讀，不要讓觀眾自己猜。">
+    <div class="slide-inner">
+      <p class="eyebrow reveal">Chart</p>
+      <h2 class="reveal">哪一段最需要時間</h2>
+      <div class="chart-bars reveal">
+        <div class="bar-row"><p>嘗試</p><span class="bar-track"><span class="bar-fill" style="--value: 80%"></span></span><p>8 分</p></div>
+        <div class="bar-row"><p>比較</p><span class="bar-track"><span class="bar-fill" style="--value: 60%"></span></span><p>6 分</p></div>
+        <div class="bar-row"><p>揭示</p><span class="bar-track"><span class="bar-fill" style="--value: 45%"></span></span><p>4 分</p></div>
+        <div class="bar-row"><p>收束</p><span class="bar-track"><span class="bar-fill" style="--value: 50%"></span></span><p>5 分</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-note="Code：程式碼或 prompt 要短，並指出觀察重點。">
+    <div class="slide-inner">
+      <p class="eyebrow reveal">Code</p>
+      <h2 class="reveal">把頁面寫成固定結構</h2>
+      <div class="code-card reveal">
+        <pre><code>&lt;section class="slide" data-note="講者提示"&gt;
+  &lt;div class="slide-inner"&gt;
+    &lt;p class="eyebrow"&gt;Activity&lt;/p&gt;
+    &lt;h2&gt;這頁的核心任務&lt;/h2&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-note="Quote：引言要短，且要接回主軸。">
+    <div class="slide-inner cols">
+      <div class="reveal from-left">
+        <span class="quote-mark">“</span>
+        <blockquote>好的教學活動，讓學生先做出可以被討論的東西。</blockquote>
+      </div>
+      <div class="panel reveal from-right">
+        <h3>這頁的作用</h3>
+        <p>用一句話把章節觀點釘住，再進入活動或收束。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-note="Activity：務必交代情境、任務、時間、產出與討論問題。">
+    <div class="slide-inner">
+      <p class="eyebrow reveal">Activity</p>
+      <h2 class="reveal">請幫導師回覆一則訊息</h2>
+      <div class="task-grid">
+        <div class="panel task-list reveal from-left">
+          <div class="task-row"><span class="task-label">情境</span><p>家長對孩子被換座位很不滿，傳來一段情緒強烈的訊息。</p></div>
+          <div class="task-row"><span class="task-label">任務</span><p>寫一版 120 字以內的回覆，兼顧同理、事實與下一步。</p></div>
+          <div class="task-row"><span class="task-label">時間</span><p>個人 4 分鐘，小組比較 3 分鐘。</p></div>
+          <div class="task-row"><span class="task-label">產出</span><p>一段可直接傳出的訊息。</p></div>
+        </div>
+        <div class="panel reveal from-right">
+          <h3>討論問題</h3>
+          <p>哪一句最能降溫？哪一句可能讓家長覺得被敷衍？你會請 AI 幫你修改哪個部分？</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-note="Try First：不要先給答案，只給必要輸入與限制。">
+    <div class="slide-inner">
+      <p class="eyebrow reveal">Try First</p>
+      <h2 class="reveal">先不要問 AI，自己寫第一版</h2>
+      <div class="compare-grid">
+        <div class="panel reveal from-left">
+          <h3>輸入材料</h3>
+          <p>「老師，我孩子是不是被針對？為什麼突然換座位？你們有先問過我們嗎？」</p>
+        </div>
+        <div class="panel reveal from-right">
+          <h3>限制</h3>
+          <p>120 字以內，不道歉敷衍，不承諾還沒確認的事，最後要留下明確下一步。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-note="Reveal：揭示範例後，要講判準，不只是公布答案。">
+    <div class="slide-inner">
+      <p class="eyebrow reveal">Reveal</p>
+      <h2 class="reveal">教師版本為什麼比較穩</h2>
+      <div class="grid stagger">
+        <div class="card">
+          <h3>先接住情緒</h3>
+          <p>先承認家長擔心，而不是立刻辯解。</p>
+        </div>
+        <div class="card">
+          <h3>只說已知事實</h3>
+          <p>避免補上還沒確認的原因。</p>
+        </div>
+        <div class="card">
+          <h3>給下一步</h3>
+          <p>提出可追蹤的處理方式與時間點。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-note="Prompt Lab：一次只改一個變因，讓觀眾能觀察差異。">
+    <div class="slide-inner">
+      <p class="eyebrow reveal">Prompt Lab</p>
+      <h2 class="reveal">把第一版交給 AI 修</h2>
+      <div class="prompt-box reveal">
+        <span class="tag">Prompt</span>
+你是有經驗的國小導師。請幫我把下面訊息改成更適合回覆家長的版本。
+
+條件：
+1. 120 字以內
+2. 先同理，再說明會確認事實
+3. 不承諾未確認的處理結果
+4. 最後留下明確下一步
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-note="Compare Tools：比較要有共同任務與共同判準。">
+    <div class="slide-inner">
+      <p class="eyebrow reveal">Compare Tools</p>
+      <h2 class="reveal">同一任務，比較三種做法</h2>
+      <div class="grid stagger">
+        <div class="card"><h3>自己寫</h3><p>速度慢一點，但最能保留現場脈絡。</p></div>
+        <div class="card"><h3>AI 改寫</h3><p>適合調整語氣、整理結構、補足遺漏。</p></div>
+        <div class="card"><h3>套用範本</h3><p>最快，但容易變得不夠貼近情境。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-note="Rubric：規準要能拿來給回饋。">
+    <div class="slide-inner">
+      <p class="eyebrow reveal">Rubric</p>
+      <h2 class="reveal">判斷一則回覆是否成熟</h2>
+      <div class="rubric stagger">
+        <div class="rubric-cell"><strong>基礎</strong><p>語氣禮貌，但缺少事實確認與下一步。</p></div>
+        <div class="rubric-cell"><strong>穩定</strong><p>能同理家長，也能說明會如何確認。</p></div>
+        <div class="rubric-cell"><strong>成熟</strong><p>兼顧情緒、事實、界線與後續追蹤。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-note="Classroom Case：換成真實案例照片或截圖會更有力量。">
+    <div class="slide-inner cols">
+      <div class="reveal from-left">
+        <p class="eyebrow">Classroom Case</p>
+        <h2>把抽象能力放回現場</h2>
+        <p class="lead">案例頁要有角色、情境、衝突與決策點。照片或截圖不是裝飾，而是讓觀眾進入現場。</p>
+      </div>
+      <div class="case-visual reveal from-right">
+        <p>替換成課堂照片、訊息截圖或學生作品</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-note="Before/After：標出改動理由，讓觀眾看見品質差異。">
+    <div class="slide-inner">
+      <p class="eyebrow reveal">Before/After</p>
+      <h2 class="reveal">同一則回覆，差在哪裡</h2>
+      <div class="before-after">
+        <div class="panel reveal from-left">
+          <h3>修改前</h3>
+          <p>我會再了解看看，請家長放心，我們會處理。</p>
+        </div>
+        <div class="panel reveal from-right">
+          <h3>修改後</h3>
+          <p>我理解您擔心孩子被針對。我會先確認換座位原因與孩子狀況，今天放學前回覆您目前了解的情形。</p>
+        </div>
+      </div>
+      <p class="change-note reveal">改動理由：後者同時補上同理、事實查核與明確時間點。</p>
+    </div>
+  </section>
+
+  <section class="slide" data-note="Reflection：活動後要讓學習者把判準帶回自己的下一步。">
+    <div class="slide-inner">
+      <p class="eyebrow reveal">Reflection</p>
+      <h2 class="reveal">回到你的下一版</h2>
+      <div class="grid stagger">
+        <div class="card"><h3>我保留什麼？</h3><p>哪一句最像我的真實語氣？</p></div>
+        <div class="card"><h3>我刪掉什麼？</h3><p>哪一句可能造成誤解或過度承諾？</p></div>
+        <div class="card"><h3>我下一步做什麼？</h3><p>我會如何確認事實並回覆家長？</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-note="Workflow：收束成可重複操作的方法。">
+    <div class="slide-inner">
+      <p class="eyebrow reveal">Workflow</p>
+      <h2 class="reveal">可重複使用的四步驟</h2>
+      <div class="workflow stagger">
+        <div class="card"><span class="num">1</span><h3>寫第一版</h3><p>先保留自己的判斷。</p></div>
+        <div class="card"><span class="num">2</span><h3>交給 AI</h3><p>只要求修語氣與結構。</p></div>
+        <div class="card"><span class="num">3</span><h3>用規準檢查</h3><p>看同理、事實、界線、下一步。</p></div>
+        <div class="card"><span class="num">4</span><h3>改成自己的話</h3><p>最後由教師負責語氣與判斷。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide closing" data-note="結尾：收束成一句能帶走的話。">
+    <div class="slide-inner">
+      <p class="eyebrow reveal">Closing</p>
+      <h1 class="reveal from-blur">工具只是幫手，<span class="accent">判斷仍在你身上</span></h1>
+      <p class="lead reveal">把每次工具使用都設計成可觀察、可比較、可修正的學習活動。</p>
+    </div>
+  </section>
+
+  <script>
+    class SlideDeck {
+      constructor() {
+        this.slides = Array.from(document.querySelectorAll('.slide'));
+        this.progress = document.querySelector('.progress');
+        this.current = 0;
+        this.createDots();
+        this.bindKeys();
+        this.observe();
+        this.update();
+      }
+
+      createDots() {
+        this.nav = document.createElement('nav');
+        this.nav.className = 'nav-dots';
+        this.nav.setAttribute('aria-label', '簡報頁面導覽');
+        this.dots = this.slides.map((_, index) => {
+          const dot = document.createElement('button');
+          dot.type = 'button';
+          dot.setAttribute('aria-label', `前往第 ${index + 1} 頁`);
+          dot.addEventListener('click', () => this.goTo(index));
+          this.nav.appendChild(dot);
+          return dot;
+        });
+        document.body.appendChild(this.nav);
+      }
+
+      bindKeys() {
+        document.addEventListener('keydown', (event) => {
+          if (['ArrowRight', 'ArrowDown', ' '].includes(event.key)) {
+            event.preventDefault();
+            this.goTo(this.current + 1);
+          }
+          if (['ArrowLeft', 'ArrowUp'].includes(event.key)) {
+            event.preventDefault();
+            this.goTo(this.current - 1);
+          }
+        });
+      }
+
+      observe() {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            entry.target.classList.toggle('visible', entry.isIntersecting);
+            if (entry.isIntersecting) {
+              this.current = this.slides.indexOf(entry.target);
+              this.update();
+            }
+          });
+        }, { threshold: 0.55 });
+        this.slides.forEach((slide) => observer.observe(slide));
+      }
+
+      goTo(index) {
+        if (index < 0 || index >= this.slides.length) return;
+        this.current = index;
+        this.slides[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        this.update();
+      }
+
+      update() {
+        const pct = ((this.current + 1) / this.slides.length) * 100;
+        this.progress.style.setProperty('--progress', `${pct}%`);
+        this.dots.forEach((dot, index) => {
+          dot.classList.toggle('active', index === this.current);
+        });
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => new SlideDeck());
+  </script>
+</body>
+</html>
